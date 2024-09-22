@@ -54,8 +54,8 @@ jobs:
           gcloud config set project $GCLOUD_PROJECT
           gcloud auth configure-docker
       - run: |
-          docker build -t gcr.io/$GCLOUD_PROJECT/hello-world:$CIRCLE_SHA1 .
-          docker push gcr.io/$GCLOUD_PROJECT/hello-world:$CIRCLE_SHA1
+          docker build -t gcr.io/$GCLOUD_PROJECT/hello-world:latest .
+          docker push gcr.io/$GCLOUD_PROJECT/hello-world:latest
 
 workflows:
   version: 2
