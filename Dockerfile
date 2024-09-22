@@ -1,36 +1,20 @@
 # Base image
-FROM node:14-alpine AS builder
+FROM node:18
 
-# Set the working directory
+# Create app directory
 WORKDIR /usr/src/app
 
-# Copy package.json and yarn.lock to install dependencies
-COPY package.json yarn.lock ./
+# A wildcard is used to ensure both package.json AND package-lock.json are copied
+COPY package*.json ./
 
-# Install all dependencies (including dev dependencies)
-RUN yarn install --frozen-lockfile
+# Install app dependencies
+RUN npm install
 
-# Copy all application files
+# Bundle app source
 COPY . .
 
-# Build the NestJS app (this compiles the TypeScript files to JavaScript)
-RUN yarn build
+# Creates a "dist" folder with the production build
+RUN npm run build
 
-# Start a new stage from the base image
-FROM node:14-alpine
-
-# Set the working directory
-WORKDIR /usr/src/app
-
-# Copy only the production dependencies
-COPY package.json yarn.lock ./
-RUN yarn install --production --frozen-lockfile --ignore-optional
-
-# Copy the compiled files from the build stage
-COPY --from=builder /usr/src/app/dist ./dist
-
-# Expose the port on which the app will run
-EXPOSE 3000
-
-# Start the application
-CMD ["yarn", "start:prod"]
+# Start the server using the production build
+CMD [ "node", "dist/main.js" ]
