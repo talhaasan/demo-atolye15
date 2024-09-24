@@ -17,24 +17,35 @@ jobs:
           name: Clear Yarn cache
           command: yarn cache clean
 
-      # Remove node_modules
+      # node_modules klasörünü kaldır
       - run:
           name: Remove node_modules
           command: rm -rf node_modules
 
       # Yarn ile bağımlılıkları yükle
-      - run: yarn
+      - run:
+          name: Install dependencies
+          command: yarn install --frozen-lockfile
 
-    
-      # Lint, format, test işlemlerini çalıştır
+      # Upgrade @types/babel__traverse
+      - run:
+          name: Upgrade @types/babel__traverse
+          command: yarn upgrade @types/babel__traverse
+
+      # Lint işlemini çalıştır
+      - run:
+          name: Run Lint
+          command: yarn lint --verbose
+
+      # Test işlemlerini çalıştır
       - run:
           name: Run Tests
           command: |
-            yarn lint && \
             yarn format:check && \
             yarn test && \
             yarn test:cov && \
             yarn test:e2e
+
 
   docker_build:
     docker:
