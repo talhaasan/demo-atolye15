@@ -65,6 +65,11 @@ jobs:
 workflows:
   version: 2
   test_and_deploy:
+    triggers:
+      - push:
+          branches:
+            only: 
+            - develop
     jobs:
       - lint
       - format
