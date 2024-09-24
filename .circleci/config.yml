@@ -19,10 +19,7 @@ jobs:
 
       # Yarn ile bağımlılıkları yükle
       - run: yarn
-      
-      # TypeScript'i en güncel sürüme güncelle
-      - run: yarn add typescript@latest --dev
-
+    
       # Lint, format, test işlemlerini çalıştır
       - run: |
           yarn lint && \
