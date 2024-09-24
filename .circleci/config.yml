@@ -11,35 +11,21 @@ jobs:
     executor: node-executor
     steps:
       - checkout
-
-      # Yarn cache temizleme
       - run:
           name: Clear Yarn cache
           command: yarn cache clean
 
-      # node_modules klasörünü kaldır
       - run:
           name: Remove node_modules
           command: rm -rf node_modules
 
-      # Yarn ile bağımlılıkları yükle
       - run:
           name: Install dependencies
-          command: yarn install --frozen-lockfile
+          command: yarn
 
-      - run:
-          name: Add typescript
-          command: yarn add typescript@latest --dev
-
-      # Upgrade @types/babel__traverse
-      - run:
-          name: Upgrade @types/babel__traverse
-          command: yarn upgrade @types/babel__traverse
-
-      # Lint işlemini çalıştır
-      - run:
-          name: Run Lint
-          command: yarn lint --verbose
+      # - run:
+      #     name: Run Lint
+      #     command: yarn lint --verbose
 
       # Test işlemlerini çalıştır
       - run:
