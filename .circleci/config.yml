@@ -17,10 +17,10 @@ jobs:
           name: Clear Yarn cache
           command: yarn cache clean
 
-      # @types/babel__traverse paketini güncelle
+      # Remove node_modules
       - run:
-          name: Upgrade @types/babel__traverse
-          command: yarn add typescript@latest
+          name: Remove node_modules
+          command: rm -rf node_modules
 
       # Yarn ile bağımlılıkları yükle
       - run: yarn
