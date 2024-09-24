@@ -66,8 +66,8 @@ jobs:
       - run:
           name: Deploy to Kubernetes
           command: |
-            kubectl apply -f k8s/stage/deployment.yaml
-            kubectl apply -f k8s/stage/service.yaml
+            kubectl apply -f k8s/production/deployment.yaml
+            kubectl apply -f k8s/production/service.yaml
 
   send_email:
     docker:
@@ -88,7 +88,7 @@ jobs:
                       "email": "ibrahimtalhaasan@gmail.com"
                     }
                   ],
-                  "subject": "Deployment Notification"
+                  "subject": "Prod Deployment Notification"
                 }
               ],
               "from": {
@@ -97,7 +97,7 @@ jobs:
               "content": [
                 {
                   "type": "text/plain",
-                  "value": "Deployment completed successfully!"
+                  "value": "Prod Deployment completed successfully!"
                 }
               ]
             }'
@@ -110,8 +110,8 @@ workflows:
           filters:
             branches:
               ignore:
+                - master
                 - develop
-                - main
       - send_email:
           requires:
             - docker_build
@@ -122,4 +122,4 @@ workflows:
           filters:
             branches:
               only:
-                - develop
+                - master
