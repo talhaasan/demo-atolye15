@@ -49,7 +49,8 @@ jobs:
             gcloud auth activate-service-account --key-file=${HOME}/gcloud-service-key.json
             gcloud config set project $GCLOUD_PROJECT
             gcloud auth configure-docker
-      
+            gcloud container clusters get-credentials atolye15 --zone europe-west3-a --project $GCLOUD_PROJECT
+
       - run:
           name: Build and Push Docker Image
           command: |
