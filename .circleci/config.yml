@@ -44,7 +44,8 @@ workflows:
           filters:
             branches:
               ignore:
-                - develop # PR oluşturulunca deploy yapılacak
+                - develop
+                - main # PR oluşturulunca deploy yapılacak
 
   # Pull request onaylandığında veya doğrudan develop branch'ına commit yapıldığında tetiklenecek iş akışı (Test işlemleri yapılacak)
   test_on_commit_or_merge:
