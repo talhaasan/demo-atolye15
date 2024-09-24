@@ -20,7 +20,7 @@ jobs:
       # @types/babel__traverse paketini güncelle
       - run:
           name: Upgrade @types/babel__traverse
-          command: yarn upgrade @types/babel__traverse
+          command: yarn add typescript@latest
 
       # Yarn ile bağımlılıkları yükle
       - run: yarn
