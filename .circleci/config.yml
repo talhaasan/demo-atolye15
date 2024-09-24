@@ -21,12 +21,14 @@ jobs:
       - run: yarn
     
       # Lint, format, test işlemlerini çalıştır
-      - run: |
-          yarn lint && \
-          yarn format:check && \
-          yarn test && \
-          yarn test:cov && \
-          yarn test:e2e
+      - run:
+          name: Run Tests
+          command: |
+            yarn lint && \
+            yarn format:check && \
+            yarn test && \
+            yarn test:cov && \
+            yarn test:e2e
 
   docker_build:
     docker:
@@ -64,16 +66,15 @@ jobs:
 
       # Kubernetes kubeconfig ayarlama
       - run:
-          name: Configure kubectl
+          name: Configure kubeconfig
           command: |
-            echo "${KUBECONFIG_CONTENT}" > ${HOME}/.kube/config
+            echo "${KUBECONFIG_CONTENT}" | base64 --decode > ${HOME}/.kube/config
             chmod 600 ${HOME}/.kube/config  # Dosya izinlerini ayarlayın
 
       - run:
           name: Check Kubernetes Cluster Access
           command: |
             kubectl get nodes
-
 
       - run:
           name: Deploy to Kubernetes
