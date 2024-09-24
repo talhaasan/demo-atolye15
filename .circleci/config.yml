@@ -40,19 +40,62 @@ jobs:
           name: Clear Docker cache
           command: docker builder prune -af
 
-      - run: |
-          echo $GCLOUD_SERVICE_KEY | base64 --decode > ${HOME}/gcloud-service-key.json
-          gcloud auth activate-service-account --key-file=${HOME}/gcloud-service-key.json
-          gcloud config set project $GCLOUD_PROJECT
-          gcloud auth configure-docker
-      - run: |
-          docker build -t gcr.io/$GCLOUD_PROJECT/hello-world:latest .
-          docker push gcr.io/$GCLOUD_PROJECT/hello-world:latest
+      - run:
+          name: Authenticate to Google Cloud
+          command: |
+            echo $GCLOUD_SERVICE_KEY | base64 --decode > ${HOME}/gcloud-service-key.json
+            gcloud auth activate-service-account --key-file=${HOME}/gcloud-service-key.json
+            gcloud config set project $GCLOUD_PROJECT
+            gcloud auth configure-docker
+      
+      - run:
+          name: Build and Push Docker Image
+          command: |
+            docker build -t gcr.io/$GCLOUD_PROJECT/hello-world:latest .
+            docker push gcr.io/$GCLOUD_PROJECT/hello-world:latest
 
-# Workflows: Farklı senaryolar için iş akışları tanımlama
+      # Kubernetes deployment
+      - run:
+          name: Deploy to Kubernetes
+          command: |
+            kubectl apply -f k8s/deployment.yaml
+            kubectl apply -f k8s/service.yaml
+
+  send_email:
+    docker:
+      - image: curlimages/curl:latest
+    steps:
+      - run:
+          name: Send Email Notification via SendGrid
+          command: |
+            curl --request POST \
+            --url https://api.sendgrid.com/v3/mail/send \
+            --header 'Authorization: Bearer $SENDGRID_API_KEY' \
+            --header 'Content-Type: application/json' \
+            --data '{
+              "personalizations": [
+                {
+                  "to": [
+                    {
+                      "email": "talha.asan@outlook.com
+                    }
+                  ],
+                  "subject": "Deployment Notification"
+                }
+              ],
+              "from": {
+                "email": "talha.asan@outlook.com
+              },
+              "content": [
+                {
+                  "type": "text/plain",
+                  "value": "Deployment completed successfully!"
+                }
+              ]
+            }'
+
 workflows:
   version: 2
-  # Pull request oluşturulduğunda tetiklenecek iş akışı (Deploy işlemi yapılacak)
   deploy_on_pull_request:
     jobs:
       - docker_build:
@@ -60,9 +103,11 @@ workflows:
             branches:
               ignore:
                 - develop
-                - main # PR oluşturulunca deploy yapılacak
+                - main
+      - send_email:
+          requires:
+            - docker_build
 
-  # Pull request onaylandığında veya doğrudan develop branch'ına commit yapıldığında tetiklenecek iş akışı (Test işlemleri yapılacak)
   test_on_commit_or_merge:
     jobs:
       - test_all:
