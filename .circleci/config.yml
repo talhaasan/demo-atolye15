@@ -27,7 +27,6 @@ jobs:
       #     name: Run Lint
       #     command: yarn lint --verbose
 
-      # Test işlemlerini çalıştır
       - run:
           name: Run Tests
           command: |
