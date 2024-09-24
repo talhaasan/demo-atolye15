@@ -54,7 +54,12 @@ jobs:
             docker build -t gcr.io/$GCLOUD_PROJECT/hello-world:latest .
             docker push gcr.io/$GCLOUD_PROJECT/hello-world:latest
 
-      # Kubernetes deployment
+      # Kubernetes kubeconfig ayarlama
+      - run:
+          name: Configure kubectl
+          command: |
+            echo "${KUBECONFIG_CONTENT}" > ${HOME}/.kube/config
+
       - run:
           name: Deploy to Kubernetes
           command: |
@@ -77,14 +82,14 @@ jobs:
                 {
                   "to": [
                     {
-                      "email": "talha.asan@outlook.com
+                      "email": "talha.asan@outlook.com"
                     }
                   ],
                   "subject": "Deployment Notification"
                 }
               ],
               "from": {
-                "email": "talha.asan@outlook.com
+                "email": "talha.asan@outlook.com"
               },
               "content": [
                 {
