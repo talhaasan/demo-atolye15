@@ -73,7 +73,7 @@ jobs:
           command: |
             curl --request POST \
             --url https://api.sendgrid.com/v3/mail/send \
-            --header 'Authorization: Bearer $SENDGRID_API_KEY' \
+            --header 'Authorization: Bearer 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' \
             --header 'Content-Type: application/json' \
             --data '{
               "personalizations": [
