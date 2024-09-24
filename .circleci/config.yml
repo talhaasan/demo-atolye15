@@ -27,6 +27,10 @@ jobs:
           name: Install dependencies
           command: yarn install --frozen-lockfile
 
+      - run:
+          name: Add typescript
+          command: yarn add typescript@latest --dev
+
       # Upgrade @types/babel__traverse
       - run:
           name: Upgrade @types/babel__traverse
