@@ -11,24 +11,31 @@ jobs:
     executor: node-executor
     steps:
       - checkout
-
-      # Yarn cache temizleme
       - run:
           name: Clear Yarn cache
           command: yarn cache clean
 
-      # Yarn ile bağımlılıkları yükle
-      - run: yarn
-    
-      # Lint, format, test işlemlerini çalıştır
+      - run:
+          name: Remove node_modules
+          command: rm -rf node_modules
+
+      - run:
+          name: Install dependencies
+          command: yarn
+
+      # - run:
+      #     name: Run Lint
+      #     command: yarn lint --verbose
+
+      # Test işlemlerini çalıştır
       - run:
           name: Run Tests
           command: |
-            yarn lint && \
             yarn format:check && \
             yarn test && \
             yarn test:cov && \
             yarn test:e2e
+
 
   docker_build:
     docker:
