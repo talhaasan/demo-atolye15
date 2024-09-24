@@ -6,11 +6,6 @@ executors:
       - image: circleci/node:14
     working_directory: ~/repo
 
-on:
-  push:
-   branches:
-   - develop
-
 jobs:
   lint:
     executor: node-executor
@@ -65,17 +60,36 @@ jobs:
 workflows:
   version: 2
   test_and_deploy:
-    triggers:
-      - push:
-          branches:
-            only: 
-            - develop
     jobs:
-      - lint
-      - format
-      - unit_test
-      - coverage
-      - e2e_test
+      - lint:
+          filters:
+            branches:
+              only:
+                -develop
+      - format:
+          filters:
+            branches:
+              only:
+                -develop
+      - unit_test:
+          filters:
+            branches:
+              only:
+                -develop
+      - coverage:
+          filters:
+            branches:
+              only:
+                -develop
+      - e2e_test:
+          filters:
+            branches:
+              only:
+                -develop
       - docker_build:
           requires:
             - e2e_test
+          filters:
+            branches:
+              only:
+                -develop
