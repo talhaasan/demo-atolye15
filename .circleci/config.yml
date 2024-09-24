@@ -7,40 +7,17 @@ executors:
     working_directory: ~/repo
 
 jobs:
-  lint:
+  test_all:
     executor: node-executor
     steps:
       - checkout
       - run: yarn
-      - run: yarn lint
-
-  format:
-    executor: node-executor
-    steps:
-      - checkout
-      - run: yarn
-      - run: yarn format:check
-
-  unit_test:
-    executor: node-executor
-    steps:
-      - checkout
-      - run: yarn
-      - run: yarn test
-
-  coverage:
-    executor: node-executor
-    steps:
-      - checkout
-      - run: yarn
-      - run: yarn test:cov
-
-  e2e_test:
-    executor: node-executor
-    steps:
-      - checkout
-      - run: yarn
-      - run: yarn test:e2e
+      - run: |
+          yarn lint && \
+          yarn format:check && \
+          yarn test && \
+          yarn test:cov && \
+          yarn test:e2e
 
   docker_build:
     docker:
@@ -57,39 +34,23 @@ jobs:
           docker build -t gcr.io/$GCLOUD_PROJECT/hello-world:latest .
           docker push gcr.io/$GCLOUD_PROJECT/hello-world:latest
 
+# Workflows: Farklı senaryolar için iş akışları tanımlama
 workflows:
   version: 2
-  test_and_deploy:
+  # Pull request oluşturulduğunda tetiklenecek iş akışı (Deploy işlemi yapılacak)
+  deploy_on_pull_request:
     jobs:
-      - lint:
-          filters:
-            branches:
-              only:
-                -develop
-      - format:
-          filters:
-            branches:
-              only:
-                -develop
-      - unit_test:
-          filters:
-            branches:
-              only:
-                -develop
-      - coverage:
-          filters:
-            branches:
-              only:
-                -develop
-      - e2e_test:
-          filters:
-            branches:
-              only:
-                -develop
       - docker_build:
-          requires:
-            - e2e_test
+          filters:
+            branches:
+              ignore:
+                - develop # PR oluşturulunca deploy yapılacak
+
+  # Pull request onaylandığında veya doğrudan develop branch'ına commit yapıldığında tetiklenecek iş akışı (Test işlemleri yapılacak)
+  test_on_commit_or_merge:
+    jobs:
+      - test_all:
           filters:
             branches:
               only:
-                -develop
+                - develop

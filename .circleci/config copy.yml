@@ -1,0 +1,95 @@
+version: 2.1
+
+executors:
+  node-executor:
+    docker:
+      - image: circleci/node:14
+    working_directory: ~/repo
+
+jobs:
+  lint:
+    executor: node-executor
+    steps:
+      - checkout
+      - run: yarn
+      - run: yarn lint
+
+  format:
+    executor: node-executor
+    steps:
+      - checkout
+      - run: yarn
+      - run: yarn format:check
+
+  unit_test:
+    executor: node-executor
+    steps:
+      - checkout
+      - run: yarn
+      - run: yarn test
+
+  coverage:
+    executor: node-executor
+    steps:
+      - checkout
+      - run: yarn
+      - run: yarn test:cov
+
+  e2e_test:
+    executor: node-executor
+    steps:
+      - checkout
+      - run: yarn
+      - run: yarn test:e2e
+
+  docker_build:
+    docker:
+      - image: google/cloud-sdk:latest
+    steps:
+      - checkout
+      - setup_remote_docker
+      - run: |
+          echo $GCLOUD_SERVICE_KEY | base64 --decode > ${HOME}/gcloud-service-key.json
+          gcloud auth activate-service-account --key-file=${HOME}/gcloud-service-key.json
+          gcloud config set project $GCLOUD_PROJECT
+          gcloud auth configure-docker
+      - run: |
+          docker build -t gcr.io/$GCLOUD_PROJECT/hello-world:latest .
+          docker push gcr.io/$GCLOUD_PROJECT/hello-world:latest
+
+workflows:
+  version: 2
+  test_and_deploy:
+    jobs:
+      - lint:
+          filters:
+            branches:
+              only:
+                -develop
+      - format:
+          filters:
+            branches:
+              only:
+                -develop
+      - unit_test:
+          filters:
+            branches:
+              only:
+                -develop
+      - coverage:
+          filters:
+            branches:
+              only:
+                -develop
+      - e2e_test:
+          filters:
+            branches:
+              only:
+                -develop
+      - docker_build:
+          requires:
+            - e2e_test
+          filters:
+            branches:
+              only:
+                -develop
