@@ -6,6 +6,11 @@ executors:
       - image: circleci/node:14
     working_directory: ~/repo
 
+on:
+  push:
+   branches:
+   - develop
+
 jobs:
   lint:
     executor: node-executor

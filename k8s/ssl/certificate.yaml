@@ -1,0 +1,13 @@
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: atolye15-helloworld-cert
+  namespace: stage
+spec:
+  secretName: atolye15-helloworld-tls
+  issuerRef:
+    name: letsencrypt-prod
+    kind: ClusterIssuer
+  commonName: atolye15helloworld.com
+  dnsNames:
+  - atolye15helloworld.com

@@ -1,7 +1,7 @@
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: hello-world-ingress
+  name: atolye15-helloworld-ingress
   namespace: stage
   annotations:
     cert-manager.io/cluster-issuer: "letsencrypt-prod"
@@ -9,7 +9,7 @@ spec:
   tls:
   - hosts:
     - atolye15helloworld.com
-    secretName: hello-world-tls
+    secretName: atolye15-helloworld-cert-vlf9v
   rules:
   - host: atolye15helloworld.com
     http:
@@ -21,3 +21,6 @@ spec:
             name: hello-world-service
             port:
               number: 80
+
+
+
