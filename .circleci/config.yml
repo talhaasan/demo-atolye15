@@ -11,7 +11,19 @@ jobs:
     executor: node-executor
     steps:
       - checkout
+
+      # Yarn cache temizleme
+      - run:
+          name: Clear Yarn cache
+          command: yarn cache clean
+
+      # Yarn ile bağımlılıkları yükle
       - run: yarn
+      
+      # TypeScript'i en güncel sürüme güncelle
+      - run: yarn add typescript@latest --dev
+
+      # Lint, format, test işlemlerini çalıştır
       - run: |
           yarn lint && \
           yarn format:check && \
@@ -25,6 +37,12 @@ jobs:
     steps:
       - checkout
       - setup_remote_docker
+
+      # Docker cache temizleme
+      - run:
+          name: Clear Docker cache
+          command: docker builder prune -af
+
       - run: |
           echo $GCLOUD_SERVICE_KEY | base64 --decode > ${HOME}/gcloud-service-key.json
           gcloud auth activate-service-account --key-file=${HOME}/gcloud-service-key.json
