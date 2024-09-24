@@ -111,7 +111,7 @@ workflows:
             branches:
               ignore:
                 - master
-                - develop
+                - main
       - send_email:
           requires:
             - docker_build
