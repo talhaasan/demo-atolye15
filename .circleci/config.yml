@@ -57,25 +57,6 @@ jobs:
             docker build -t gcr.io/$GCLOUD_PROJECT/hello-world:latest .
             docker push gcr.io/$GCLOUD_PROJECT/hello-world:latest
           
-      # Install kubectl
-      - run:
-          name: Install kubectl
-          command: |
-            curl -LO "https://storage.googleapis.com/kubernetes-release/release/$(curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt)/bin/linux/amd64/kubectl"
-            chmod +x ./kubectl
-            mv ./kubectl /usr/local/bin/kubectl
-
-      # Kubernetes kubeconfig ayarlama
-      - run:
-          name: Configure kubeconfig
-          command: |
-            echo "${KUBECONFIG_CONTENT}" | base64 --decode > ${HOME}/.kube/config
-            chmod 600 ${HOME}/.kube/config  # Dosya izinlerini ayarlayın
-
-      - run:
-          name: Check Kubernetes Cluster Access
-          command: |
-            kubectl get nodes
 
       - run:
           name: Deploy to Kubernetes
