@@ -59,6 +59,7 @@ jobs:
           name: Configure kubectl
           command: |
             echo "${KUBECONFIG_CONTENT}" > ${HOME}/.kube/config
+            chmod 600 ${HOME}/.kube/config  # Dosya izinlerini ayarlayın
 
       - run:
           name: Check Kubernetes Cluster Access
