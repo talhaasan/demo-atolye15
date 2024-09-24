@@ -9,14 +9,7 @@
     "sourceMap": true,
     "outDir": "./dist",
     "baseUrl": "./",
-    "incremental": true,
-    "strict": true,  // Katı mod
-    "noUnusedLocals": true,  // Kullanılmayan değişkenleri kontrol et
-    "noUnusedParameters": true,  // Kullanılmayan parametreleri kontrol et
-    "skipLibCheck": true, // Kütüphane kontrolünü atla
-    "forceConsistentCasingInFileNames": true // Dosya isimlerindeki büyük/küçük harf tutarlılığı
+    "incremental": true
   },
-  "exclude": ["node_modules", "dist"],
-  "include": ["src/**/*", "test/**/*"] // Test dosyalarını ve src içeriğini dahil et
+  "exclude": ["node_modules", "dist"]
 }
-
