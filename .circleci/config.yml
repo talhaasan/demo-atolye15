@@ -17,8 +17,14 @@ jobs:
           name: Clear Yarn cache
           command: yarn cache clean
 
+      # @types/babel__traverse paketini güncelle
+      - run:
+          name: Upgrade @types/babel__traverse
+          command: yarn upgrade @types/babel__traverse
+
       # Yarn ile bağımlılıkları yükle
       - run: yarn
+
     
       # Lint, format, test işlemlerini çalıştır
       - run:
