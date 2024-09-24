@@ -53,6 +53,14 @@ jobs:
           command: |
             docker build -t gcr.io/$GCLOUD_PROJECT/hello-world:latest .
             docker push gcr.io/$GCLOUD_PROJECT/hello-world:latest
+          
+      # Install kubectl
+      - run:
+          name: Install kubectl
+          command: |
+            curl -LO "https://storage.googleapis.com/kubernetes-release/release/$(curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt)/bin/linux/amd64/kubectl"
+            chmod +x ./kubectl
+            sudo mv ./kubectl /usr/local/bin/kubectl
 
       # Kubernetes kubeconfig ayarlama
       - run:
