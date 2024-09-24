@@ -73,14 +73,14 @@ jobs:
           command: |
             curl --request POST \
             --url https://api.sendgrid.com/v3/mail/send \
-            --header 'Authorization: Bearer $SENDGRID_API_KEY' \
+            --header 'Authorization: Bearer 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' \
             --header 'Content-Type: application/json' \
             --data '{
               "personalizations": [
                 {
                   "to": [
                     {
-                      "email": "talha.asan@outlook.com"
+                      "email": "ibrahimtalhaasan@gmail.com"
                     }
                   ],
                   "subject": "Deployment Notification"
