@@ -4,14 +4,16 @@ metadata:
   name: atolye15-helloworld-ingress
   namespace: stage
   annotations:
+    kubernetes.io/ingress.class: nginx
     cert-manager.io/cluster-issuer: "letsencrypt-prod"
 spec:
+  ingressClassName: nginx
   tls:
   - hosts:
-    - atolye15helloworld.com
-    secretName: atolye15-helloworld-cert-vlf9v
+    - talhaasan-atolye15hello.com
+    secretName: secret-tls
   rules:
-  - host: atolye15helloworld.com
+  - host: talhaasan-atolye15hello.com
     http:
       paths:
       - path: /
