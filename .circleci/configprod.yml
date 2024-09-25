@@ -2,6 +2,8 @@ version: 2.1
 
 jobs:
   production_deploy:
+    docker:
+      - image: google/cloud-sdk:latest  # Docker image ile Google Cloud SDK kullanılıyor
     steps:
       - run:
           name: Authenticate to Google Cloud
@@ -12,7 +14,6 @@ jobs:
             gcloud auth configure-docker
             gcloud container clusters get-credentials atolye15 --zone europe-west3-a --project $GCLOUD_PROJECT
 
-      #production ns'indeki podun latest imagı tekrar çekerek kalkması    
       - run:
           name: Deploy to Kubernetes
           command: |
