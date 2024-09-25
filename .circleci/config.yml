@@ -36,7 +36,7 @@ jobs:
             yarn test:e2e
 
 
-  docker_build:
+  docker_build_k8s_deploy:
     docker:
       - image: google/cloud-sdk:latest
     steps:
@@ -68,6 +68,7 @@ jobs:
           command: |
             kubectl apply -f k8s/stage/deployment.yaml
             kubectl apply -f k8s/stage/service.yaml
+            kubectl rollout restart deployment hello-world-deployment -n stage
 
   send_email:
     docker:
@@ -104,23 +105,23 @@ jobs:
 
 workflows:
   version: 2
-  deploy_on_pull_request:
-    jobs:
-      - docker_build:
-          filters:
-            branches:
-              ignore:
-                - develop
-                - main
-                - master
-      - send_email:
-          requires:
-            - docker_build
-
-  test_on_commit_or_merge:
+  deploy_on_pull_request_to_develop:
     jobs:
       - test_all:
           filters:
             branches:
               only:
-                - develop
+                - develop  # develop branch'ine PR açıldığında testler çalışacak
+
+      - docker_build_k8s_deploy:
+          requires:
+            - test_all   # Testlerden sonra Docker build işlemi yapılacak
+          filters:
+            branches:
+              only:
+                - develop  # Sadece develop branch'ine PR geldiğinde çalışacak
+
+      - send_email:
+          requires:
+            - docker_build_k8s_deploy   # Docker build tamamlandığında email gönderilecek
+
