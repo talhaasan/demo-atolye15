@@ -2,7 +2,7 @@ Eksikler:
 Proje lint adımında hata veriyor, hata kod tarafında biraz baktım ama çözümü bulamadım.
 Pipeline'da bu kısmı yoruma aldım.
 Yapılanlar:
-Pipeline yapıları stage ve prod ortamı CircleCI'da kurulmuştur.
+Pipeline yapıları stage(.circleci/config.yaml) ve prod(.circleci/configprod.yaml) CircleCI'da kurulmuştur.
 Google Cloud'da Kubernetes cluster'ı kurulmuştur.
 Cluster'a ingress ve cert-manager uygulamaları kurulmuştur.
 Google Cloud domain'den talhaasan-atolye15hello.com satın alınarak letsencrypt üzerinden SSL ayarları yapılmıştır.
