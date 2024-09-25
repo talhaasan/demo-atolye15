@@ -70,7 +70,7 @@ workflows:
   #developtan mastere merge requestte çalışıyor
   pr_to_master:
     jobs:
-      - test_all:
+      - production_deploy:
           filters:
             branches:
               only:
