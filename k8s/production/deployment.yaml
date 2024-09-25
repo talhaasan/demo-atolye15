@@ -18,3 +18,4 @@ spec:
         image: gcr.io/airy-dialect-435922-g0/hello-world:latest
         ports:
         - containerPort: 3000
+        imagePullPolicy: Always
