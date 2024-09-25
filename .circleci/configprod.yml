@@ -1,53 +1,8 @@
 version: 2.1
 
-executors:
-  node-executor:
-    docker:
-      - image: circleci/node:14
-    working_directory: ~/repo
-
 jobs:
-  test_all:
-    executor: node-executor
+  production_deploy:
     steps:
-      - checkout
-      - run:
-          name: Clear Yarn cache
-          command: yarn cache clean
-
-      - run:
-          name: Remove node_modules
-          command: rm -rf node_modules
-
-      - run:
-          name: Install dependencies
-          command: yarn
-
-      # - run:
-      #     name: Run Lint
-      #     command: yarn lint --verbose
-
-      - run:
-          name: Run Tests
-          command: |
-            yarn format:check && \
-            yarn test && \
-            yarn test:cov && \
-            yarn test:e2e
-
-
-  docker_build:
-    docker:
-      - image: google/cloud-sdk:latest
-    steps:
-      - checkout
-      - setup_remote_docker
-
-      # Docker cache temizleme
-      - run:
-          name: Clear Docker cache
-          command: docker builder prune -af
-
       - run:
           name: Authenticate to Google Cloud
           command: |
@@ -57,17 +12,11 @@ jobs:
             gcloud auth configure-docker
             gcloud container clusters get-credentials atolye15 --zone europe-west3-a --project $GCLOUD_PROJECT
 
-      - run:
-          name: Build and Push Docker Image
-          command: |
-            docker build -t gcr.io/$GCLOUD_PROJECT/hello-world:latest .
-            docker push gcr.io/$GCLOUD_PROJECT/hello-world:latest
-          
+      #production ns'indeki podun latest imagı tekrar çekerek kalkması    
       - run:
           name: Deploy to Kubernetes
           command: |
-            kubectl apply -f k8s/production/deployment.yaml
-            kubectl apply -f k8s/production/service.yaml
+            kubectl rollout restart deployment hello-world-deployment -n production
 
   send_email:
     docker:
@@ -104,19 +53,22 @@ jobs:
 
 workflows:
   version: 2
-  deploy_on_pull_request:
-    jobs:
-      - docker_build:
-          filters:
-            branches:
-              ignore:
-                - master
-                - main
-      - send_email:
-          requires:
-            - docker_build
+  #mastera commit geldiğinde
+  # deploy_on_pull_request:
+  #   jobs:
+  #     - production_deploy:
+  #         filters:
+  #           branches:
+  #             ignore:
+  #               - master
+  #               - develop
+  #               - main
+  #     - send_email:
+  #         requires:
+  #           - production_deploy
 
-  test_on_commit_or_merge:
+  #developtan mastere merge requestte çalışıyor
+  pr_to_master:
     jobs:
       - test_all:
           filters:
