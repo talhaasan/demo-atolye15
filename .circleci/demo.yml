@@ -1,0 +1,184 @@
+version: 2.1
+
+executors:
+  node-executor:
+    docker:
+      - image: circleci/node:14
+    working_directory: ~/repo
+
+jobs:
+  # Test işlemlerinin çalıştırılması
+  test_all:
+    executor: node-executor
+    steps:
+      - checkout
+      - run:
+          name: Clear Yarn cache
+          command: yarn cache clean
+
+      - run:
+          name: Remove node_modules
+          command: rm -rf node_modules
+
+      - run:
+          name: Install dependencies
+          command: yarn
+
+      - run:
+          name: Run Tests
+          command: |
+            yarn format:check && \
+            yarn test && \
+            yarn test:cov && \
+            yarn test:e2e
+
+  # Geliştirme aşaması için Docker imajının build edilmesi ve deploy
+  docker_build:
+    docker:
+      - image: google/cloud-sdk:latest
+    steps:
+      - checkout
+      - setup_remote_docker
+
+      # Docker cache temizleme
+      - run:
+          name: Clear Docker cache
+          command: docker builder prune -af
+
+      - run:
+          name: Authenticate to Google Cloud
+          command: |
+            echo $GCLOUD_SERVICE_KEY | base64 --decode > ${HOME}/gcloud-service-key.json
+            gcloud auth activate-service-account --key-file=${HOME}/gcloud-service-key.json
+            gcloud config set project $GCLOUD_PROJECT
+            gcloud auth configure-docker
+            gcloud container clusters get-credentials atolye15 --zone europe-west3-a --project $GCLOUD_PROJECT
+
+      - run:
+          name: Build and Push Docker Image
+          command: |
+            docker build -t gcr.io/$GCLOUD_PROJECT/hello-world:latest .
+            docker push gcr.io/$GCLOUD_PROJECT/hello-world:latest
+
+      - run:
+          name: Deploy to Kubernetes
+          command: |
+            kubectl apply -f k8s/stage/deployment.yaml
+            kubectl apply -f k8s/stage/service.yaml
+
+  # Production için deploy işlemi
+  production_deploy:
+    docker:
+      - image: google/cloud-sdk:latest
+    steps:
+      - run:
+          name: Authenticate to Google Cloud
+          command: |
+            echo $GCLOUD_SERVICE_KEY | base64 --decode > ${HOME}/gcloud-service-key.json
+            gcloud auth activate-service-account --key-file=${HOME}/gcloud-service-key.json
+            gcloud config set project $GCLOUD_PROJECT
+            gcloud auth configure-docker
+            gcloud container clusters get-credentials atolye15 --zone europe-west3-a --project $GCLOUD_PROJECT
+
+      # Production namespace'teki pod'un tekrar kalkması
+      - run:
+          name: Deploy to Kubernetes
+          command: |
+            kubectl rollout restart deployment hello-world-deployment
+
+  # # Email gönderme
+  # send_email:
+  #   docker:
+  #     - image: curlimages/curl:latest
+  #   steps:
+  #     - run:
+  #         name: Send Email Notification via SendGrid
+  #         command: |
+  #           curl --request POST \
+  #           --url https://api.sendgrid.com/v3/mail/send \
+  #           --header 'Authorization: Bearer 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' \
+  #           --header 'Content-Type: application/json' \
+  #           --data '{
+  #             "personalizations": [
+  #               {
+  #                 "to": [
+  #                   {
+  #                     "email": "ibrahimtalhaasan@gmail.com"
+  #                   }
+  #                 ],
+  #                 "subject": "Deployment Notification"
+  #               }
+  #             ],
+  #             "from": {
+  #               "email": "talha.asan@outlook.com"
+  #             },
+  #             "content": [
+  #               {
+  #                 "type": "text/plain",
+  #                 "value": "Deployment completed successfully!"
+  #               }
+  #             ]
+  #           }'
+  # send_email_prod:
+  #   docker:
+  #     - image: curlimages/curl:latest
+  #   steps:
+  #     - run:
+  #         name: Send Email Notification via SendGrid
+  #         command: |
+  #           curl --request POST \
+  #           --url https://api.sendgrid.com/v3/mail/send \
+  #           --header 'Authorization: Bearer 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' \
+  #           --header 'Content-Type: application/json' \
+  #           --data '{
+  #             "personalizations": [
+  #               {
+  #                 "to": [
+  #                   {
+  #                     "email": "ibrahimtalhaasan@gmail.com"
+  #                   }
+  #                 ],
+  #                 "subject": "Prod Deployment Notification"
+  #               }
+  #             ],
+  #             "from": {
+  #               "email": "talha.asan@outlook.com"
+  #             },
+  #             "content": [
+  #               {
+  #                 "type": "text/plain",
+  #                 "value": "Deployment completed successfully!"
+  #               }
+  #             ]
+  #           }'
+
+workflows:
+  version: 2
+  # PR geldiğinde develop branch'ine test ve docker build işlemleri çalışacak
+  deploy_on_pull_request:
+    jobs:
+      - test_all:
+          filters:
+            branches:
+              only:
+                - develop
+      - docker_build:
+          filters:
+            branches:
+              only:
+                - develop
+      - send_email:
+          requires:
+            - docker_build
+
+  # Master branch'ine PR yapıldığında production deploy işlemi çalışacak
+  pr_to_master:
+    jobs:
+      - production_deploy:
+          filters:
+            branches:
+              only:
+                - master
+      - send_email_prod:
+          requires:
+            - production_deploy
