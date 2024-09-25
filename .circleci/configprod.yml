@@ -53,25 +53,18 @@ jobs:
 
 workflows:
   version: 2
-  #mastera commit geldiğinde
-  # deploy_on_pull_request:
-  #   jobs:
-  #     - production_deploy:
-  #         filters:
-  #           branches:
-  #             ignore:
-  #               - master
-  #               - develop
-  #               - main
-  #     - send_email:
-  #         requires:
-  #           - production_deploy
-
-  #developtan mastere merge requestte çalışıyor
-  pr_to_master:
+  deploy_on_pull_request_to_master:
     jobs:
       - production_deploy:
           filters:
             branches:
               only:
-                - master
+                - master  # develop'tan master'a PR açıldığında bu job çalışacak
+
+      - send_email:
+          requires:
+            - production_deploy  # production_deploy job'ı tamamlandığında email gönderilecek
+          filters:
+            branches:
+              only:
+                - master  # develop'tan master'a PR açıldığında bu job çalışacak
