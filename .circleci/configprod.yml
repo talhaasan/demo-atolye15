@@ -16,6 +16,8 @@ jobs:
       - run:
           name: Deploy to Kubernetes
           command: |
+            kubectl apply -f k8s/stage/deployment.yaml
+            kubectl apply -f k8s/stage/service.yaml
             kubectl rollout restart deployment hello-world-deployment -n production
 
   send_email:
