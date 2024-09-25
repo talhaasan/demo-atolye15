@@ -3,7 +3,7 @@ version: 2.1
 jobs:
   production_deploy:
     docker:
-      - image: google/cloud-sdk:latest  # Docker image ile Google Cloud SDK kullanılıyor
+      - image: google/cloud-sdk:latest
     steps:
       - run:
           name: Authenticate to Google Cloud
