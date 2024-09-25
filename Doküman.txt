@@ -1,5 +1,6 @@
 Eksikler:
-Proje lint adımında hata veriyor, hata kod tarafınd biraz baktım ama çözümü bulamadım.
+Proje lint adımında hata veriyor, hata kod tarafında biraz baktım ama çözümü bulamadım.
+Pipeline'da bu kısmı yoruma aldım.
 Yapılanlar:
 Pipeline yapıları stage ve prod ortamı CircleCI'da kurulmuştur.
 Google Cloud'da Kubernetes cluster'ı kurulmuştur.
@@ -10,8 +11,3 @@ k8s/ssl/letsencrypted-issuer.yaml-> cert manager letsencrypt'e sertifika oluştu
 k8s/ssl/certrequest.yaml->letsenycrytedissuer kullanarak secretlara stage namespace'inde talhaasan-atolye15hello.com'a göre otomatik sertifika genarete ediyor.
 k8s/ssl/ingress.yaml-> Üretilen secret ve domain veriliyor.
 Deployment sonunda da her iki ortam için de mail gönderilmektedir.
-
-
-
-
-
