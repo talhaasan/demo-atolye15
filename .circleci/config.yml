@@ -112,6 +112,7 @@ workflows:
               ignore:
                 - develop
                 - main
+                - master
       - send_email:
           requires:
             - docker_build
