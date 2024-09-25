@@ -54,6 +54,62 @@ jobs:
               ]
             }'
 
+version: 2.1
+
+jobs:
+  production_deploy:
+    docker:
+      - image: google/cloud-sdk:latest
+    steps:
+      - checkout  # Dosyaların çekilmesini sağlar
+      - run:
+          name: Authenticate to Google Cloud
+          command: |
+            echo $GCLOUD_SERVICE_KEY | base64 --decode > ${HOME}/gcloud-service-key.json
+            gcloud auth activate-service-account --key-file=${HOME}/gcloud-service-key.json
+            gcloud config set project $GCLOUD_PROJECT
+            gcloud auth configure-docker
+            gcloud container clusters get-credentials atolye15 --zone europe-west3-a --project $GCLOUD_PROJECT
+      - run:
+          name: Deploy to Kubernetes
+          command: |
+            kubectl apply -f k8s/production/deployment.yaml
+            kubectl apply -f k8s/production/service.yaml
+            kubectl rollout restart deployment hello-world-deployment -n production
+
+  send_email:
+    docker:
+      - image: curlimages/curl:latest
+    steps:
+      - run:
+          name: Send Email Notification via SendGrid
+          command: |
+            curl --request POST \
+            --url https://api.sendgrid.com/v3/mail/send \
+            --header 'Authorization: Bearer $SENDGRID_API_KEY' \
+            --header 'Content-Type: application/json' \
+            --data '{
+              "personalizations": [
+                {
+                  "to": [
+                    {
+                      "email": "ibrahimtalhaasan@gmail.com"
+                    }
+                  ],
+                  "subject": "Prod Deployment Notification"
+                }
+              ],
+              "from": {
+                "email": "talha.asan@outlook.com"
+              },
+              "content": [
+                {
+                  "type": "text/plain",
+                  "value": "Prod Deployment completed successfully!"
+                }
+              ]
+            }'
+
 workflows:
   version: 2
   deploy_on_pull_request_to_master:
@@ -62,12 +118,16 @@ workflows:
           filters:
             branches:
               only:
-                - master  # develop'tan master'a PR açıldığında bu job çalışacak
+                - master  # PR master'a açıldığında tetiklenir
+          require:
+            - pull_requests  # Yalnızca PR event'i tetikler
 
       - send_email:
           requires:
-            - production_deploy  # production_deploy job'ı tamamlandığında email gönderilecek
+            - production_deploy  # production_deploy job'ı tamamlandığında email gönderilir
           filters:
             branches:
               only:
-                - master  # develop'tan master'a PR açıldığında bu job çalışacak
+                - master  # PR master'a açıldığında tetiklenir
+          require:
+            - pull_requests  # Yalnızca PR event'i tetikler
