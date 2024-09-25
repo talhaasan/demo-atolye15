@@ -10,4 +10,4 @@ Oluşturulan manifest dosyaları pipeline'da uygulanmıştır.
 k8s/ssl/letsencrypted-issuer.yaml-> cert manager letsencrypt'e sertifika oluşturma doğrulayıcısını aktifleştiriyor.
 k8s/ssl/certrequest.yaml->letsenycrytedissuer kullanarak secretlara stage namespace'inde talhaasan-atolye15hello.com'a göre otomatik sertifika genarete ediyor.
 k8s/ssl/ingress.yaml-> Üretilen secret ve domain veriliyor.
-Deployment sonunda da her iki ortam için de mail gönderilmektedir.
+Deployment sonunda da her iki ortam için de mail gönderilmektedir.(Projeyi sizinle paylaşmak için public'e dönüştürdüğümde SendGrid api key'leri sildi.)
