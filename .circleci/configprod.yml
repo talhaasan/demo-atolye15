@@ -16,7 +16,7 @@ jobs:
       - run:
           name: Deploy to Kubernetes
           command: |
-            kubectl rollout restart deployment hello-world-deployment
+            kubectl rollout restart deployment hello-world-deployment -n production
 
   send_email:
     docker:
