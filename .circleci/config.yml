@@ -112,7 +112,8 @@ workflows:
             branches:
               ignore:
                 - master
-                - develop  # Sadece feature branch'lerine PR açıldığında testler çalışacak
+                - develop  # Master ve develop branch'ları dışında tüm feature branch'lerde çalışacak
+
   deploy_on_pr_to_develop:
     jobs:
       - docker_build_k8s_deploy:
@@ -126,4 +127,4 @@ workflows:
           filters:
             branches:
               only:
-                - develop  # Sadece develop branch'ına PR açıldığında email gönderilecek
+                - develop  # PR develop'a açıldığında email gönderilecek
