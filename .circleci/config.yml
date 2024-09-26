@@ -103,43 +103,27 @@ jobs:
                 }
               ]
             }'
-
-check_source_branch:
-  docker:
-    - image: circleci/node:14
-  steps:
-    - checkout
-    - run:
-        name: Check if PR is from Feature or Develop
-        command: |
-          if [ "$CIRCLE_BRANCH" = "feature/task1" ] || [ "$CIRCLE_BRANCH" = "develop" ]; then
-            echo "PR is from feature/task1 or develop. Proceeding with the deployment."
-            exit 0
-          else
-            echo "Not from feature/task1 or develop. Skipping deployment steps."
-            exit 1
-          fi
-
 workflows:
   version: 2
-  deploy_on_pr_from_feature_to_develop:
+  feature_branch_test:
     jobs:
-      - check_source_branch:
+      - test_all:
           filters:
             branches:
-              only:
-                - develop  # PR hedefi develop olduğunda çalışır
+              ignore:
+                - master
+                - develop  # Sadece feature branch'lerine PR açıldığında testler çalışacak
+  deploy_on_pr_to_develop:
+    jobs:
       - docker_build_k8s_deploy:
-          requires:
-            - check_source_branch
           filters:
             branches:
               only:
-                - develop  # PR develop'a açıldığında tetiklenir ve deploy yapılır
+                - develop  # Sadece develop branch'ına PR açıldığında çalışacak
       - send_email:
           requires:
             - docker_build_k8s_deploy
           filters:
             branches:
               only:
-                - develop  # PR develop'a açıldığında tetiklenir ve email gönderilir
+                - develop  # Sadece develop branch'ına PR açıldığında email gönderilecek
