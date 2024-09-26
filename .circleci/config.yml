@@ -137,7 +137,7 @@ workflows:
             branches:
               only:
                 - develop  # Sadece develop branch'ine PR geldiğinde çalışır
-      - production_deploy:
+      - docker_build_k8s_deploy:
           requires:
             - check_source_branch
           filters:
@@ -146,7 +146,7 @@ workflows:
                 - develop  # Sadece PR develop branch'ine açıldığında tetiklenir
       - send_email:
           requires:
-            - production_deploy
+            - docker_build_k8s_deploy
           filters:
             branches:
               only:
