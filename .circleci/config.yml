@@ -57,6 +57,7 @@ jobs:
             gcloud auth configure-docker
             gcloud container clusters get-credentials atolye15 --zone europe-west3-a --project $GCLOUD_PROJECT
 
+      #TODO: image tag'i commit id kullanılarak hata oluşması durumunda debug ve rollback işlemleri kolaylaştırılabilr.
       - run:
           name: Build and Push Docker Image
           command: |
