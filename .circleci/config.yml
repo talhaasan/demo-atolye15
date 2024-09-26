@@ -105,23 +105,13 @@ jobs:
             }'
 workflows:
   version: 2
-  test_on_feature_branches:
-    jobs:
-      - test_all:
-          filters:
-            branches:
-              ignore:
-                - master
-                - develop  # Master ve develop branch'larını hariç tutuyoruz, diğer branch'lar için çalışacak.
-
   deploy_on_pull_request_to_develop:
     jobs:
       - test_all:
           filters:
             branches:
               only:
-                - develop  # Sadece develop branch'ına PR geldiğinde testler çalışacak
-          pull_request: true  # Sadece PR olduğunda bu adım tetiklenecek.
+                - develop  # develop branch'ine PR açıldığında testler çalışacak
 
       - docker_build_k8s_deploy:
           requires:
@@ -129,18 +119,8 @@ workflows:
           filters:
             branches:
               only:
-                - develop  # Sadece develop branch'ına PR geldiğinde çalışacak
-          pull_request: true  # Sadece PR olduğunda çalışacak.
+                - develop  # Sadece develop branch'ine PR geldiğinde çalışacak
 
       - send_email:
           requires:
             - docker_build_k8s_deploy   # Docker build tamamlandığında email gönderilecek
-          filters:
-            branches:
-              only:
-                - develop  # Sadece develop branch'ına PR olduğunda çalışacak.
-          pull_request: true  # Sadece PR olduğunda çalışacak.
-
-
-
-
