@@ -62,12 +62,13 @@ jobs:
       - run:
           name: Check if PR is from Develop
           command: |
-            if [ "$(git rev-parse --abbrev-ref HEAD)" = "develop" ]; then
-              echo "PR is from develop. Proceeding with the deployment."
+            BRANCH_NAME=$(git rev-parse --abbrev-ref HEAD)
+            if [ "$BRANCH_NAME" = "develop" ] || [ "$BRANCH_NAME" = "master" ]; then
+              echo "PR is from develop or master. Proceeding with the deployment."
               exit 0
             else
-              echo "Not from develop. Skipping deployment steps."
-              exit 1  # Eğer PR develop'tan değilse bu adım fail olur
+              echo "Not from develop or master. Skipping deployment steps."
+              exit 1
             fi
 
 workflows:
