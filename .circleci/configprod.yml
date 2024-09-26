@@ -2,10 +2,7 @@ version: 2.1
 
 jobs:
   production_deploy:
-    docker:
-      - image: google/cloud-sdk:latest
     steps:
-      - checkout
       - run:
           name: Authenticate to Google Cloud
           command: |
@@ -14,83 +11,67 @@ jobs:
             gcloud config set project $GCLOUD_PROJECT
             gcloud auth configure-docker
             gcloud container clusters get-credentials atolye15 --zone europe-west3-a --project $GCLOUD_PROJECT
+
+      #production ns'indeki podun latest imagı tekrar çekerek kalkması    
       - run:
           name: Deploy to Kubernetes
           command: |
-            kubectl apply -f k8s/production/deployment.yaml
-            kubectl apply -f k8s/production/service.yaml
-            kubectl rollout restart deployment hello-world-deployment -n production
+            kubectl rollout restart deployment hello-world-deployment
 
-  send_email:
-    docker:
-      - image: curlimages/curl:latest
-    steps:
-      - run:
-          name: Send Email Notification via SendGrid
-          command: |
-            curl --request POST \
-            --url https://api.sendgrid.com/v3/mail/send \
-            --header 'Authorization: Bearer $SENDGRID_API_KEY' \
-            --header 'Content-Type: application/json' \
-            --data '{
-              "personalizations": [
-                {
-                  "to": [
-                    {
-                      "email": "ibrahimtalhaasan@gmail.com"
-                    }
-                  ],
-                  "subject": "Prod Deployment Notification"
-                }
-              ],
-              "from": {
-                "email": "talha.asan@outlook.com"
-              },
-              "content": [
-                {
-                  "type": "text/plain",
-                  "value": "Prod Deployment completed successfully!"
-                }
-              ]
-            }'
-
-  check_source_branch:
-    docker:
-      - image: circleci/node:14
-    steps:
-      - checkout
-      - run:
-          name: Check if PR is from Develop
-          command: |
-            BRANCH_NAME=$(git rev-parse --abbrev-ref HEAD)
-            if [ "$BRANCH_NAME" = "develop" ] || [ "$BRANCH_NAME" = "master" ]; then
-              echo "PR is from develop or master. Proceeding with the deployment."
-              exit 0
-            else
-              echo "Not from develop or master. Skipping deployment steps."
-              exit 1
-            fi
+  # send_email:
+  #   docker:
+  #     - image: curlimages/curl:latest
+  #   steps:
+  #     - run:
+  #         name: Send Email Notification via SendGrid
+  #         command: |
+  #           curl --request POST \
+  #           --url https://api.sendgrid.com/v3/mail/send \
+  #           --header 'Authorization: Bearer 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' \
+  #           --header 'Content-Type: application/json' \
+  #           --data '{
+  #             "personalizations": [
+  #               {
+  #                 "to": [
+  #                   {
+  #                     "email": "ibrahimtalhaasan@gmail.com"
+  #                   }
+  #                 ],
+  #                 "subject": "Prod Deployment Notification"
+  #               }
+  #             ],
+  #             "from": {
+  #               "email": "talha.asan@outlook.com"
+  #             },
+  #             "content": [
+  #               {
+  #                 "type": "text/plain",
+  #                 "value": "Prod Deployment completed successfully!"
+  #               }
+  #             ]
+  #           }'
 
 workflows:
   version: 2
-  deploy_on_pr_from_develop_to_master:
+  #mastera commit geldiğinde
+  # deploy_on_pull_request:
+  #   jobs:
+  #     - production_deploy:
+  #         filters:
+  #           branches:
+  #             ignore:
+  #               - master
+  #               - develop
+  #               - main
+  #     - send_email:
+  #         requires:
+  #           - production_deploy
+
+  #developtan mastere merge requestte çalışıyor
+  pr_to_master:
     jobs:
-      - check_source_branch:
+      - test_all:
           filters:
             branches:
               only:
-                - master  # PR hedefi master olduğunda çalışır
-      - production_deploy:
-          requires:
-            - check_source_branch
-          filters:
-            branches:
-              only:
-                - master  # PR master'a açıldığında tetiklenir ve deploy yapılır
-      - send_email:
-          requires:
-            - production_deploy
-          filters:
-            branches:
-              only:
-                - master  # PR master'a açıldığında tetiklenir ve email gönderilir
+                - master

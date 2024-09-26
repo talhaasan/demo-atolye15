@@ -128,7 +128,7 @@ workflows:
             branches:
               ignore:
                 - master
-                - develop  # Sadece feature branch'ler için çalışacak
+                - develop  # Sadece feature branch'lere commit geldiğinde çalışacak
 
   deploy_on_pr_to_develop:
     jobs:
@@ -136,16 +136,18 @@ workflows:
           filters:
             branches:
               only:
-                - develop  # PR sadece develop branch'ına açıldığında çalışacak
-      - docker_build_k8s_deploy:
+                - develop  # Sadece develop branch'ine PR geldiğinde çalışır
+      - production_deploy:
+          requires:
+            - check_source_branch
           filters:
             branches:
               only:
-                - develop  # PR develop'a açıldığında tetiklenecek
+                - develop  # Sadece PR develop branch'ine açıldığında tetiklenir
       - send_email:
           requires:
-            - docker_build_k8s_deploy
+            - production_deploy
           filters:
             branches:
               only:
-                - develop  # PR develop'a açıldığında email gönderilecek
+                - develop  # Sadece PR develop branch'ine açıldığında email gönderilir
