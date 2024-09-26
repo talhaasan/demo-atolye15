@@ -24,11 +24,4 @@ NOT: Dependency'lerin kurulmasi icin proje dizininde `yarn` komutunun calistiril
 
 NOT: Uygulama `yarn start:prod` komutu ile ayaga 3000 portunda ayaga kalkiyor.
 # demo-atolye15
-#TALHAAAAAaa
-
-
-
-x brannchinde develop branchine pr açılacak bu durum stage'i tetikleyecek
-
-
-developtan mastera 
+#TALHAAAAAaaa
