@@ -112,7 +112,8 @@ jobs:
       - run:
           name: Check if PR is to Develop
           command: |
-            if [[ "$CIRCLE_BRANCH" == "develop" ]] && [[ "$CIRCLE_PULL_REQUEST" == "/^feature\/.*$/" ]]; then
+            BRANCH_NAME=$(git rev-parse --abbrev-ref HEAD)
+            if [[ "$BRANCH_NAME" = "feature/task1" ]] || [[ "$BRANCH_NAME" = "develop" ]]; then
               echo "This is a PR to develop. Proceeding with deployment steps."
               exit 0
             else
