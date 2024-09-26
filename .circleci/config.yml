@@ -105,21 +105,20 @@ jobs:
             }'
 
 check_source_branch:
-    docker:
-      - image: circleci/node:14
-    steps:
-      - checkout
-      - run:
-          name: Check if PR is from Develop
-          command: |
-            BRANCH_NAME=$(git rev-parse --abbrev-ref HEAD)
-            if [ "$BRANCH_NAME" = "feature/task1" ] || [ "$BRANCH_NAME" = "develop" ]; then
-              echo "PR is from develop or develop. Proceeding with the deployment."
-              exit 0
-            else
-              echo "Not from develop or develop. Skipping deployment steps."
-              exit 1
-            fi
+  docker:
+    - image: circleci/node:14
+  steps:
+    - checkout
+    - run:
+        name: Check if PR is from Feature or Develop
+        command: |
+          if [ "$CIRCLE_BRANCH" = "feature/task1" ] || [ "$CIRCLE_BRANCH" = "develop" ]; then
+            echo "PR is from feature/task1 or develop. Proceeding with the deployment."
+            exit 0
+          else
+            echo "Not from feature/task1 or develop. Skipping deployment steps."
+            exit 1
+          fi
 
 workflows:
   version: 2
