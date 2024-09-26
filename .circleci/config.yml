@@ -112,7 +112,7 @@ jobs:
       - run:
           name: Check if PR is to Develop
           command: |
-            if [[ "$CIRCLE_BRANCH" == "develop" ]] && [[ "$CIRCLE_PULL_REQUEST" != "feature/task1" ]]; then
+            if [[ "$CIRCLE_BRANCH" == "develop" ]] && [[ "$CIRCLE_PULL_REQUEST" != "" ]]; then
               echo "This is a PR to develop. Proceeding with deployment steps."
               exit 0
             else
