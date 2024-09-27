@@ -130,8 +130,8 @@ workflows:
       - test_all:
           filters:
             branches:
-              only:
-                - develop
+              ignore:
+                - master # Sadece feature branch'lere commit geldiğinde çalışacak
 
   deploy_on_pr_to_develop:
     jobs:
