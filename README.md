@@ -23,6 +23,7 @@ Pipeline'in istedigin kismini es gecebilir veya kendince daha dogru oldugunu dus
 NOT: Dependency'lerin kurulmasi icin proje dizininde `yarn` komutunun calistirilmasi gerekiyor.
 
 NOT: Uygulama `yarn start:prod` komutu ile ayaga 3000 portunda ayaga kalkiyor.
+
 # demo-atolye15
 Eksikler:
 Proje lint adımında hata veriyor, hata kod tarafında biraz baktım ama çözümü bulamadım.
