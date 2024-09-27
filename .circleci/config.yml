@@ -36,7 +36,7 @@ jobs:
             yarn test:e2e
 
 
-  docker_build_k8s_deploy:
+  docker_build:
     docker:
       - image: google/cloud-sdk:latest
     steps:
@@ -57,7 +57,6 @@ jobs:
             gcloud auth configure-docker
             gcloud container clusters get-credentials atolye15 --zone europe-west3-a --project $GCLOUD_PROJECT
 
-      #TODO: image tag'i commit id kullanılarak hata oluşması durumunda debug ve rollback işlemleri kolaylaştırılabilr.
       - run:
           name: Build and Push Docker Image
           command: |
@@ -69,7 +68,6 @@ jobs:
           command: |
             kubectl apply -f k8s/stage/deployment.yaml
             kubectl apply -f k8s/stage/service.yaml
-            kubectl rollout restart deployment hello-world-deployment -n stage
 
   send_email:
     docker:
@@ -104,54 +102,24 @@ jobs:
               ]
             }'
 
-  check_source_branch:
-    docker:
-      - image: circleci/node:14
-    steps:
-      - checkout
-      - run:
-          name: Check if PR is to Develop
-          command: |
-            if [[ -z "$CIRCLE_PULL_REQUEST" ]]; then
-              echo "This is not a PR. Skipping check."
-              exit 0
-            elif [[ "$CIRCLE_BRANCH" == "develop" ]]; then
-              echo "This is a PR to develop. Proceeding with deployment steps."
-              exit 0
-            else
-              echo "Not a PR to develop. Skipping deployment steps."
-              exit 1
-            fi
-
 workflows:
   version: 2
-  feature_branch_test:
+  deploy_on_pull_request:
+    jobs:
+      - docker_build:
+          filters:
+            branches:
+              ignore:
+                - develop
+                - main
+      - send_email:
+          requires:
+            - docker_build
+
+  test_on_commit_or_merge:
     jobs:
       - test_all:
           filters:
             branches:
-              ignore:
-                - master
-                - develop  # Sadece feature branch'lere commit geldiğinde çalışacak
-
-  deploy_on_pr_to_develop:
-    jobs:
-      - check_source_branch:
-          filters:
-            branches:
               only:
-                - develop  # Sadece develop branch'ine PR geldiğinde çalışır
-      - docker_build_k8s_deploy:
-          requires:
-            - check_source_branch
-          filters:
-            branches:
-              only:
-                - develop  # Sadece PR develop branch'ine açıldığında tetiklenir
-      - send_email:
-          requires:
-            - docker_build_k8s_deploy
-          filters:
-            branches:
-              only:
-                - develop  # Sadece PR develop branch'ine açıldığında email gönderilir
+                - develop
