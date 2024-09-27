@@ -1,26 +1,2 @@
-Joblar:
 
-Stage 
-
-1. When faeture to --> develop Create MR --> Trigger Yarn test Job for stage
-
-2. When approved feature MR to --> develop --> Trigger docker build, push, k apply(stage ns) and notification
-
-docker buildden sonra ekle
---------------------------
-Prod
-3. When develop to --> master Create MR --> Trigger Yarn test job for production
-
-4. When approved develop MR to --> master --> Trigger docker build, push, k apply(production ns) and notification
-
-
-clustera cert-manager kuruldu
-dns al
-letsenycrytedissuer-> letsencrypte cert manager kullanarak certifika oluşturma doğrulayıcıyı aktifleştiriyor
-certeqeues->letsenycrytedissuer kullanarak secretlara stage ns inde otomatik sertifika genarete ediyor.
-ingress->ürettiği secret ve domain veriliyor.
-
-
------
-yarn kontrollerini tek jobda yap.
 
