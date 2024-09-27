@@ -31,7 +31,6 @@ Pipeline'da bu kısmı yoruma aldım.
 Yapılabilecekler:
 Image tag'i commit id kullanılarak hata oluşması durumunda debug ve rollback işlemleri kolaylaştırılabilr.
 
-
 Yapılanlar:
 Pipeline yapıları stage(.circleci/config.yaml) ve prod(.circleci/configprod.yaml) CircleCI'da kurulmuştur.
 
