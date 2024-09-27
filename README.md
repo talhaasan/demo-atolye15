@@ -71,6 +71,5 @@ bu PR onaylandığında ise stage ortamı için build,deploy ve mail gönderme i
 Bu adım da başarılı olursa, deploy branch'inden master branch'ine PR geldiğinde ve onaylandığında
 production deploy ve mail gönderme işini yapıyor.
 ![Açıklama Metni](./ss/ss3.jpeg)
-
 Son
 ![Açıklama Metni](./ss/ss4.jpeg)
