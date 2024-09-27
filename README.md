@@ -27,6 +27,7 @@ NOT: Uygulama `yarn start:prod` komutu ile ayaga 3000 portunda ayaga kalkiyor.
 Eksikler:
 Proje lint adımında hata veriyor, hata kod tarafında biraz baktım ama çözümü bulamadım.
 Pipeline'da bu kısmı yoruma aldım.
+Yapılabilecekler:
 Yapılanlar:
 Pipeline yapıları stage(.circleci/config.yaml) ve prod(.circleci/configprod.yaml) CircleCI'da kurulmuştur.
 Google Cloud'da Kubernetes cluster'ı kurulmuştur.
@@ -43,10 +44,10 @@ demo pipeline'ı(güncel hali develop branch'inde config.yml dosyası) stage ort
 prod pipeline'ı(üncel hali master branch'inde configprod.yml dosyası) producton'a deployment yapıyor.
 Akış:
 Developer feature* branch'ine commit atıyor ve test adımları çalışıyor.
-
+![Açıklama Metni](./ss/ss1.jpeg)
 Test adımları başarılı olursa develop branchine PR açıyor,
 bu PR onaylandığında ise stage ortamı için build,deploy ve mail gönderme işini yapıyor.
-Bu adım da başarılı olursa, deploy branch'inden master branch'ine pr geldiğinde production deploy ve mail gönderme işini yapıyor.
-
-developa pr açıldığında stage ortamına deploy oluyor
-bir sıkıntı yoksa en son developtan mastera pr açılıyor ve stage deki imaj bu sefer productiona veriliyor
+![Açıklama Metni](./ss/ss2.jpeg)
+Bu adım da başarılı olursa, deploy branch'inden master branch'ine PR geldiğinde ve onaylandığında
+production deploy ve mail gönderme işini yapıyor.
+![Açıklama Metni](./ss/ss3.jpeg)
