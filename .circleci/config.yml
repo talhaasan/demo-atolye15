@@ -116,10 +116,10 @@ jobs:
               echo "This is not a PR. Skipping check."
               exit 0
             elif [[ "$CIRCLE_BRANCH" == "develop" ]]; then
-              echo "This is a PR to develop. Proceeding with deployment steps."
+              echo "This is a PR to develop. Proceeding with staging deployment steps."
               exit 0
             else
-              echo "Not a PR to develop. Skipping deployment steps."
+              echo "Not a PR to develop. Skipping staging deployment steps."
               exit 1
             fi
 

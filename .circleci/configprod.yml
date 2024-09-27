@@ -60,14 +60,16 @@ jobs:
     steps:
       - checkout
       - run:
-          name: Check if PR is from Develop
+          name: Check if PR is to master
           command: |
-            BRANCH_NAME=$(git rev-parse --abbrev-ref HEAD)
-            if [ "$BRANCH_NAME" = "develop" ] || [ "$BRANCH_NAME" = "master" ]; then
-              echo "PR is from develop or master. Proceeding with the deployment."
+            if [[ -z "$CIRCLE_PULL_REQUEST" ]]; then
+              echo "This is not a PR. Skipping check."
+              exit 0
+            elif [[ "$CIRCLE_BRANCH" == "master" ]]; then
+              echo "This is a PR to master. Proceeding with production deployment steps."
               exit 0
             else
-              echo "Not from develop or master. Skipping deployment steps."
+              echo "Not a PR to master. Skipping production deployment steps."
               exit 1
             fi
 
