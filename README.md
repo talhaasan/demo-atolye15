@@ -24,7 +24,7 @@ NOT: Dependency'lerin kurulmasi icin proje dizininde `yarn` komutunun calistiril
 
 NOT: Uygulama `yarn start:prod` komutu ile ayaga 3000 portunda ayaga kalkiyor.
 
-# demo-atolye15
+# Sonuç
 Eksikler:
 Proje lint adımında hata veriyor, hata kod tarafında biraz baktım ama çözümü bulamadım.
 Pipeline'da bu kısmı yoruma aldım.
