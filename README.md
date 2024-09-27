@@ -29,6 +29,7 @@ Proje lint adımında hata veriyor, hata kod tarafında biraz baktım ama çöz�
 Pipeline'da bu kısmı yoruma aldım.
 
 Yapılabilecekler:
+Image tag'i commit id kullanılarak hata oluşması durumunda debug ve rollback işlemleri kolaylaştırılabilr.
 
 
 Yapılanlar:
